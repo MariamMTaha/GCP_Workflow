@@ -28,15 +28,12 @@ jobs:
 
       - name: Terraform Init (skip backend)
         run: terraform init -backend=false -input=false
-        working-directory: aip-terraform-demo
 
       - name: Terraform Format
         run: terraform fmt -check -recursive
-        working-directory: aip-terraform-demo
 
       - name: Terraform Validate
         run: terraform validate
-        working-directory: aip-terraform-demo
 
   terraform:
     name: Terraform Deploy
@@ -58,29 +55,25 @@ jobs:
 
       - name: Terraform Init
         run: terraform init -input=false
-        working-directory: aip-terraform-demo
 
       # --- Plan ---
       - name: Terraform Plan
         if: ${{ github.event.inputs.action == 'plan'|| github.event.inputs.action == 'apply' }}
         run: terraform plan -out=tfplan -input=false
-        working-directory: aip-terraform-demo
 
       - name: Upload Terraform Plan
         if: ${{ github.event.inputs.action == 'plan' }}
         uses: actions/upload-artifact@v4
         with:
           name: terraform-plan
-          path: aip-terraform-demo/tfplan
+          path: tfplan
 
       # --- Apply ---
       - name: Terraform Apply
         if: ${{ github.event.inputs.action == 'apply' }}
         run: terraform apply -auto-approve tfplan
-        working-directory: aip-terraform-demo
 
       # --- Destroy ---
       - name: Terraform Destroy
         if: ${{ github.event.inputs.action == 'destroy' }}
         run: terraform destroy -auto-approve
-        working-directory: aip-terraform-demo
